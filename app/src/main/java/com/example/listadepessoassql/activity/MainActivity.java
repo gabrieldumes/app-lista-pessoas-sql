@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        listaPessoas.clear();
         popularLista();
 
         Adapter adapter = new Adapter(listaPessoas);
