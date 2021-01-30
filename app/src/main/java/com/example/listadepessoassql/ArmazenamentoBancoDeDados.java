@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.listadepessoassql.model.Pessoa;
+
 public class ArmazenamentoBancoDeDados {
 
     private Context context;
@@ -28,7 +30,7 @@ public class ArmazenamentoBancoDeDados {
         }
     }
 
-    public String recuperarNomePessoa(int position) {
+    /*public String recuperarNomePessoa(int position) {
         try {
             Cursor cursor = database.rawQuery("SELECT nome FROM pessoa", null);
             int indiceColunaNome = cursor.getColumnIndex("nome");
@@ -50,12 +52,43 @@ public class ArmazenamentoBancoDeDados {
             Log.i("INSETO ", e.getMessage());
             return 1111;
         }
+    }*/
+
+    public Pessoa recuperarPessoa(int position, String filtro) {
+
+        try {
+            if (filtro == "") {
+                Cursor cursor = database.rawQuery("SELECT nome, ano FROM pessoa", null);
+                int indiceColunaNome = cursor.getColumnIndex("nome");
+                int indiceColunaAno = cursor.getColumnIndex("ano");
+                cursor.moveToPosition(position);
+                return new Pessoa(cursor.getString(indiceColunaNome), cursor.getInt(indiceColunaAno));
+            } else {
+                String sql = "SELECT nome, ano FROM pessoa WHERE nome LIKE '%" + filtro + "%' " +
+                        "OR ano LIKE '%" + filtro + "%'";
+                Cursor cursor = database.rawQuery(sql, null);
+                int indiceColunaNome = cursor.getColumnIndex("nome");
+                int indiceColunaAno = cursor.getColumnIndex("ano");
+                cursor.moveToPosition(position);
+                return new Pessoa(cursor.getString(indiceColunaNome), cursor.getInt(indiceColunaAno));
+            }
+        } catch (Exception e) {
+            Log.i("INSETO ", e.getMessage());
+            return new Pessoa("Erro", 1111);
+        }
     }
 
-    public int recuperarQuantidadeDeLinhas() {
+    public int recuperarQuantidadeDeLinhas(String filtro) {
         try {
-            Cursor cursor = database.rawQuery("SELECT nome FROM pessoa", null);
-            return cursor.getCount();
+            if (filtro == "") {
+                Cursor cursor = database.rawQuery("SELECT nome FROM pessoa", null);
+                return cursor.getCount();
+            } else {
+                String sql = "SELECT nome, ano FROM pessoa WHERE nome LIKE '%" + filtro + "%' " +
+                        "OR ano LIKE '%" + filtro + "%'";
+                Cursor cursor = database.rawQuery(sql, null);
+                return cursor.getCount();
+            }
         } catch (Exception e) {
             Log.i("INSETO ", e.getMessage());
             return 0;

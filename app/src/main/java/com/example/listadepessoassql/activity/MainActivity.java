@@ -1,5 +1,6 @@
 package com.example.listadepessoassql.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -7,12 +8,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.listadepessoassql.ArmazenamentoBancoDeDados;
+import com.example.listadepessoassql.ArmazenamentoPreferencias;
 import com.example.listadepessoassql.R;
 import com.example.listadepessoassql.RecyclerItemClickListener;
 import com.example.listadepessoassql.adapter.Adapter;
@@ -30,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private List<Pessoa> listaPessoas = new ArrayList<>();
     private ArmazenamentoBancoDeDados bancoDeDados;
 
+    private ArmazenamentoPreferencias preferencias;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         fabInserirPessoa = findViewById(R.id.fabInserirPessoa);
 
         bancoDeDados = new ArmazenamentoBancoDeDados(this);
+        preferencias = new ArmazenamentoPreferencias(this);
 
         fabInserirPessoa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,9 +96,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void popularLista() {
-        for (int i = 0; i < bancoDeDados.recuperarQuantidadeDeLinhas(); i++) {
-            Pessoa pessoa = new Pessoa(bancoDeDados.recuperarNomePessoa(i), bancoDeDados.recuperarAnoNascimento(i));
+        for (int i = 0; i < bancoDeDados.recuperarQuantidadeDeLinhas(preferencias.recuperarFiltro()); i++) {
+            Pessoa pessoa = bancoDeDados.recuperarPessoa(i, preferencias.recuperarFiltro());
             listaPessoas.add(pessoa);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.munu_filtrar, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        startActivity(new Intent(getApplicationContext(), FiltrarActivity.class));
+        return super.onOptionsItemSelected(item);
     }
 }
