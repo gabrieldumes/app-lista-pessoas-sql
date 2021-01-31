@@ -66,8 +66,11 @@ public class MainActivity extends AppCompatActivity {
                         new RecyclerItemClickListener.OnItemClickListener() {
                             @Override
                             public void onItemClick(View view, int position) {
+                                Intent intent = new Intent(MainActivity.this, InserirPessoaActivity.class);
                                 Pessoa pessoa = listaPessoas.get(position);
-                                Toast.makeText(MainActivity.this, pessoa.getNome(), Toast.LENGTH_SHORT).show();
+                                intent.putExtra("id-pessoa", pessoa.getId());
+                                startActivity(intent);
+                                //Toast.makeText(MainActivity.this, pessoa.getNome(), Toast.LENGTH_SHORT).show();
                             }
 
                             @Override

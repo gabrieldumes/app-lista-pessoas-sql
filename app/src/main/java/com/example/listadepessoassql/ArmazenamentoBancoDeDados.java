@@ -16,7 +16,8 @@ public class ArmazenamentoBancoDeDados {
         this.context = context;
         try {
             database = context.openOrCreateDatabase("app_db", Context.MODE_PRIVATE, null);
-            database.execSQL("CREATE TABLE IF NOT EXISTS pessoa(nome VARCHAR, ano INT(4))");
+            database.execSQL("CREATE TABLE IF NOT EXISTS pessoa" +
+                    "(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, ano INT(4))");
         } catch (Exception e) {
             Log.i("INSETO ", e.getMessage());
         }
@@ -30,61 +31,52 @@ public class ArmazenamentoBancoDeDados {
         }
     }
 
-    /*public String recuperarNomePessoa(int position) {
+    public void alterarPessoa(int id, String nome, int ano) {
         try {
-            Cursor cursor = database.rawQuery("SELECT nome FROM pessoa", null);
-            int indiceColunaNome = cursor.getColumnIndex("nome");
-            cursor.moveToPosition(position);
-            return cursor.getString(indiceColunaNome);
+            database.execSQL("UPDATE pessoa SET nome = '" + nome + "', ano = " + ano + " WHERE id = " + id);
         } catch (Exception e) {
             Log.i("INSETO ", e.getMessage());
-            return "Erro";
         }
     }
 
-    public int recuperarAnoNascimento(int position) {
-        try {
-            Cursor cursor = database.rawQuery("SELECT ano FROM pessoa", null);
-            int indiceColunaAno = cursor.getColumnIndex("ano");
-            cursor.moveToPosition(position);
-            return cursor.getInt(indiceColunaAno);
-        } catch (Exception e) {
-            Log.i("INSETO ", e.getMessage());
-            return 1111;
-        }
-    }*/
-
     public Pessoa recuperarPessoa(int position, String filtro) {
-
         try {
             if (filtro == "") {
-                Cursor cursor = database.rawQuery("SELECT nome, ano FROM pessoa", null);
+                Cursor cursor = database.rawQuery("SELECT id, nome, ano FROM pessoa", null);
+                int indiceColunaId = cursor.getColumnIndex("id");
                 int indiceColunaNome = cursor.getColumnIndex("nome");
                 int indiceColunaAno = cursor.getColumnIndex("ano");
                 cursor.moveToPosition(position);
-                return new Pessoa(cursor.getString(indiceColunaNome), cursor.getInt(indiceColunaAno));
+                return new Pessoa(
+                        cursor.getInt(indiceColunaId),
+                        cursor.getString(indiceColunaNome),
+                        cursor.getInt(indiceColunaAno));
             } else {
-                String sql = "SELECT nome, ano FROM pessoa WHERE nome LIKE '%" + filtro + "%' " +
+                String sql = "SELECT id, nome, ano FROM pessoa WHERE nome LIKE '%" + filtro + "%' " +
                         "OR ano LIKE '%" + filtro + "%'";
                 Cursor cursor = database.rawQuery(sql, null);
+                int indiceColunaId = cursor.getColumnIndex("id");
                 int indiceColunaNome = cursor.getColumnIndex("nome");
                 int indiceColunaAno = cursor.getColumnIndex("ano");
                 cursor.moveToPosition(position);
-                return new Pessoa(cursor.getString(indiceColunaNome), cursor.getInt(indiceColunaAno));
+                return new Pessoa(
+                        cursor.getInt(indiceColunaId),
+                        cursor.getString(indiceColunaNome),
+                        cursor.getInt(indiceColunaAno));
             }
         } catch (Exception e) {
             Log.i("INSETO ", e.getMessage());
-            return new Pessoa("Erro", 1111);
+            return new Pessoa(-1, "Erro", 1111);
         }
     }
 
     public int recuperarQuantidadeDeLinhas(String filtro) {
         try {
             if (filtro == "") {
-                Cursor cursor = database.rawQuery("SELECT nome FROM pessoa", null);
+                Cursor cursor = database.rawQuery("SELECT id, nome, ano FROM pessoa", null);
                 return cursor.getCount();
             } else {
-                String sql = "SELECT nome, ano FROM pessoa WHERE nome LIKE '%" + filtro + "%' " +
+                String sql = "SELECT id, nome, ano FROM pessoa WHERE nome LIKE '%" + filtro + "%' " +
                         "OR ano LIKE '%" + filtro + "%'";
                 Cursor cursor = database.rawQuery(sql, null);
                 return cursor.getCount();
@@ -92,6 +84,24 @@ public class ArmazenamentoBancoDeDados {
         } catch (Exception e) {
             Log.i("INSETO ", e.getMessage());
             return 0;
+        }
+    }
+
+    public Pessoa recuperarPessoaPorId(int id) {
+        try {
+            Cursor cursor = database.rawQuery(
+                    "SELECT id, nome, ano FROM pessoa WHERE id = " + id,  null);
+            int indiceColunaId = cursor.getColumnIndex("id");
+            int indiceColunaNome = cursor.getColumnIndex("nome");
+            int indiceColunaAno = cursor.getColumnIndex("ano");
+            cursor.moveToFirst();
+            return new Pessoa(
+                    cursor.getInt(indiceColunaId),
+                    cursor.getString(indiceColunaNome),
+                    cursor.getInt(indiceColunaAno));
+        } catch (Exception e) {
+            Log.i("INSETO ", e.getMessage());
+            return new Pessoa(-1, "Erro", 1111);
         }
     }
 }

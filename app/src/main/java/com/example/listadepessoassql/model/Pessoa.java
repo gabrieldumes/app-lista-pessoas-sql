@@ -2,6 +2,7 @@ package com.example.listadepessoassql.model;
 
 public class Pessoa {
 
+    private int id;
     private String nome;
     private int ano;
 
@@ -9,7 +10,8 @@ public class Pessoa {
 
     }
 
-    public Pessoa(String nome, int ano) {
+    public Pessoa(int id, String nome, int ano) {
+        this.id = id;
         this.nome = nome;
         this.ano = ano;
     }
@@ -20,6 +22,10 @@ public class Pessoa {
 
     public void setAno(int ano) {
         this.ano = ano;
+    }
+
+    public int getId(){
+        return this.id;
     }
 
     public String getNome() {
