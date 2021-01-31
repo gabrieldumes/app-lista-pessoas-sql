@@ -1,11 +1,13 @@
 package com.example.listadepessoassql.activity;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -70,12 +72,25 @@ public class MainActivity extends AppCompatActivity {
                                 Pessoa pessoa = listaPessoas.get(position);
                                 intent.putExtra("id-pessoa", pessoa.getId());
                                 startActivity(intent);
-                                //Toast.makeText(MainActivity.this, pessoa.getNome(), Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void onLongItemClick(View view, int position) {
-                                Toast.makeText(MainActivity.this, String.valueOf(listaPessoas.get(position).getAno()), Toast.LENGTH_SHORT).show();
+                                AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                                dialog.setTitle("Quer mesmo excluir este item?");
+                                dialog.setMessage("Não é possível desfazer esta operação");
+                                dialog.setCancelable(false);
+                                dialog.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Pessoa pessoa = listaPessoas.get(position);
+                                        bancoDeDados.removerPessoa(pessoa.getId());
+                                        Toast.makeText(MainActivity.this, "Item excluído com sucesso", Toast.LENGTH_SHORT).show();
+                                        onStart();
+                                    }
+                                });
+                                dialog.setNegativeButton("Não", null);
+                                dialog.create().show();
                             }
 
                             @Override

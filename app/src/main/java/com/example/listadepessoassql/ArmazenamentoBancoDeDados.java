@@ -39,6 +39,14 @@ public class ArmazenamentoBancoDeDados {
         }
     }
 
+    public void removerPessoa(int id) {
+        try {
+            database.execSQL("DELETE FROM pessoa WHERE id = " + id);
+        } catch (Exception e) {
+            Log.i("INSETO ", e.getMessage());
+        }
+    }
+
     public Pessoa recuperarPessoa(int position, String filtro) {
         try {
             if (filtro == "") {
